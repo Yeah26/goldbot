@@ -5,6 +5,7 @@ import os
 import random
 from datetime import datetime, timedelta
 from dotenv import load_dotenv
+from keep_alive import keep_alive
 
 load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
@@ -147,6 +148,7 @@ async def pay(ctx, member: discord.Member, amount: int):
     data[receiver] = target
     save_data(data)
     await ctx.send(f"📤 {ctx.author.mention} küldött {amount} GOLD-ot {member.mention}-nek!")
+
 @bot.command()
 async def shop(ctx):
     shop_msgs = [
@@ -187,7 +189,6 @@ async def rank(ctx):
         if gold >= threshold:
             current_rank = rank
     await ctx.send(f"🏅 {ctx.author.mention}, jelenlegi rangod: **{current_rank}** ({gold} GOLD)")
-
 @bot.command()
 async def topgold(ctx):
     data = load_data()
@@ -226,14 +227,8 @@ async def peca(ctx):
         return await ctx.send(get_cooldown_msg(remain))
     user["last_peca"] = now.isoformat()
 
-    halak = ["Aranyhal", "Lazac", "Tonhal", "Békanyálas pisztráng", "Jetpack rája", "Szivárvány hal", "Banánhal", "Kígyóhal", "Névtelen angolna", "Golyófejű ponty",
-             "Villámharcsa", "Kókuszhajító cápa", "Álmodó lepényhal", "Dühös sügér", "Rózsaszín rák", "Fortniteos makréla", "Csillámos angolna", "Páncélos ponty", "Mocsári sárgörény", "Lila garnéla",
-             "Kígyóuborka", "Sziklaugró pisztráng", "Halfülű manó", "Narancshasú ponty", "Robothal", "Kardhal", "Mini Leviatán", "Kacsahal", "Gyémántharcos hal", "Legendás Peelyhal"]
-
-    szemetek = ["Műanyag zacskó", "Elhasznált zokni", "Rohadt krumpli", "Széttört iPhone", "Üres XP-kapszula", "Repedt vbucks token", "Kifőtt gumi", "Dióhéj",
-                "Eldobott sörösdoboz", "Rágós papír", "Félbevágott konzerv", "Lejárt pecsét", "Rágógumi", "Kuka hős maszk", "Kiégett loot crate", "Széttört joycon",
-                "Hamis szerverrang", "Kopott papucs", "Üres pénztárca", "Szotyi héj", "Elhagyott emote kód", "Törött bot trigger", "Piszkos zokni", "Rossz banana skin",
-                "Gyűrt TikTok flyer", "Üres flaska", "Kilyukadt gumimatrac", "Hamis Battle Pass", "Banánhéj", "Büdös rongy"]
+    halak = ["Aranyhal", "Lazac", "Tonhal", "Jetpack rája", "Legendás Peelyhal"]
+    szemetek = ["Műanyag zacskó", "Büdös rongy", "Hamis Battle Pass", "Repedt vbucks token"]
 
     if random.randint(1, 2) == 1:
         hal = random.choice(halak)
@@ -298,4 +293,7 @@ async def rob(ctx, member: discord.Member):
     data[target_id] = target
     save_data(data)
     await ctx.send(msg)
+from keep_alive import keep_alive
+
+keep_alive()
 bot.run(TOKEN)
