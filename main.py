@@ -80,6 +80,31 @@ async def claim(ctx):
     data[user_id] = user
     save_data(data)
     await ctx.send(f"🎁 {ctx.author.mention}, szereztél 10 GOLD-ot! 🍌")
+@bot.command()
+async def info(ctx):
+    msg = (
+        "📜 **GOLDBOT PARANCSOK** 📜\n\n"
+        "**💰 Alap:**\n"
+        "`!bal` – Megnézed mennyi GOLD-od van\n"
+        "`!claim` – 30 percenként 10 GOLD\n"
+        "`!daily` – Napi jutalom: 100 GOLD\n"
+        "`!rank` – Jelenlegi rangod\n\n"
+        "**🎲 Mini-játékok:**\n"
+        "`!hunt` – Vadászat (10 perc cooldown)\n"
+        "`!peca` – Horgászat (10 perc cooldown)\n"
+        "`!flip [összeg] [heads/tails]` – Pénzfeldobás\n"
+        "`!rob @tag` – Rablás (1 óra cooldown)\n\n"
+        "**📦 Bolt & kereskedelem:**\n"
+        "`!shop` – Bolt státusz (loot loading...)\n"
+        "`!buy [item]` – Vásárlás pl.: vbucks500\n"
+        "`!pay @tag [összeg]` – GOLD küldése másnak\n\n"
+        "**🏆 Ranglisták:**\n"
+        "`!top` – Top 25 játékos\n"
+        "`!topgold` – Top 10 játékos\n\n"
+        "🧠 Tipp: Használd ki a cooldownokat, gyűjtsd a GOLD-ot és urald a ranglistát!"
+    )
+    await ctx.send(msg)
+
 
 @bot.command()
 async def daily(ctx):
