@@ -76,10 +76,11 @@ async def claim(ctx):
         remain = int((timedelta(minutes=30) - (now - datetime.fromisoformat(last))).total_seconds() / 60)
         return await ctx.send(get_cooldown_msg(remain))
     user["last_claim"] = now.isoformat()
-    user["gold"] += 10
+    amount = random.randint(10, 100)
+    user["gold"] += amount
     data[user_id] = user
     save_data(data)
-    await ctx.send(f"🎁 {ctx.author.mention}, szereztél 10 GOLD-ot! 🍌")
+    await ctx.send(f"🎁 {ctx.author.mention}, szereztél {amount} GOLD-ot! 🍌")
 @bot.command()
 async def info(ctx):
     msg = (
