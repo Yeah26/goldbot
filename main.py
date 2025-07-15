@@ -87,14 +87,16 @@ async def info(ctx):
         "📜 **GOLDBOT PARANCSOK** 📜\n\n"
         "**💰 Alap:**\n"
         "`!bal` – Megnézed mennyi GOLD-od van\n"
-        "`!claim` – 30 percenként 10-100 GOLD\n"
+        "`!claim` – 30 percenként 10–100 GOLD\n"
         "`!daily` – Napi jutalom: 100 GOLD\n"
         "`!rank` – Jelenlegi rangod\n\n"
         "**🎲 Mini-játékok:**\n"
         "`!hunt` – Vadászat (10 perc cooldown)\n"
         "`!peca` – Horgászat (10 perc cooldown)\n"
         "`!flip [összeg] [heads/tails]` – Pénzfeldobás\n"
-        "`!rob @tag` – Rablás (1 óra cooldown)\n\n"
+        "`!rob @tag` – Rablás (1 óra cooldown)\n"
+        "`!boom` – Napi 1x! 50% eséllyel dupláz vagy lenulláz\n"
+        "`!vault` – 3 óránként loot: +350 / semmi / -150 GOLD\n\n"
         "**📦 Bolt & kereskedelem:**\n"
         "`!shop` – Bolt státusz (loot loading...)\n"
         "`!buy [item]` – Vásárlás pl.: vbucks500\n"
@@ -105,6 +107,7 @@ async def info(ctx):
         "🧠 Tipp: Használd ki a cooldownokat, gyűjtsd a GOLD-ot és urald a ranglistát!"
     )
     await ctx.send(msg)
+
 
 
 @bot.command()
@@ -270,6 +273,70 @@ async def peca(ctx):
     data[user_id] = user
     save_data(data)
     await ctx.send(msg)
+@bot.command()
+async def boom(ctx):
+    user_id = str(ctx.author.id)
+    now = datetime.utcnow()
+    data = load_data()
+    user = data.get(user_id, {"gold": 0})
+    last = user.get("last_boom", "1970-01-01T00:00:00")
+    if now - datetime.fromisoformat(last) < timedelta(days=1):
+        remain = int((timedelta(days=1) - (now - datetime.fromisoformat(last))).total_seconds() / 60)
+        msg = random.choice([
+            f"💣 A BOOM még hűl… Várj még **{remain} percet**!",
+            f"🕶️ A robbanás túl friss, gyere vissza később (**{remain} perc**)!",
+            f"🔥 Még füstöl a szerver. BOOM cooldown: **{remain} perc**.",
+            f"😬 A bot épp a kezeit rakosgatja vissza… várj **{remain} percet**!",
+            f"🧨 Most robbant, várj egy kicsit! (**{remain} perc**) 😅",
+        ])
+        return await ctx.send(msg)
+    
+    user["last_boom"] = now.isoformat()
+    gold = user.get("gold", 0)
+    if random.choice([True, False]):
+        user["gold"] += gold
+        msg = f"💥 Szerencséd volt! Megdupláztad a GOLD-odat: most {user['gold']} GOLD-od van!"
+    else:
+        user["gold"] = 0
+        msg = "💀 Bumm! Minden GOLD-od elszállt, viszont legalább látványos volt."
+
+    data[user_id] = user
+    save_data(data)
+    await ctx.send(msg)
+
+@bot.command()
+async def vault(ctx):
+    user_id = str(ctx.author.id)
+    now = datetime.utcnow()
+    data = load_data()
+    user = data.get(user_id, {"gold": 0})
+    last = user.get("last_vault", "1970-01-01T00:00:00")
+    if now - datetime.fromisoformat(last) < timedelta(hours=3):
+        remain = int((timedelta(hours=3) - (now - datetime.fromisoformat(last))).total_seconds() / 60)
+        msg = random.choice([
+            f"🔐 A trezor zárva van, próbáld újra **{remain} perc** múlva!",
+            f"🕵️‍♂️ A vault őre most alszik. Várj **{remain} percet**!",
+            f"💼 A lootot újratöltik… (**{remain} perc**) és jöhetsz vissza!",
+            f"🔒 Még nem nyílt újra a széf, chill még **{remain} perc**.",
+            f"📦 A kincsesláda resetel. **{remain} perc** múlva kinyílik!",
+        ])
+        return await ctx.send(msg)
+
+    user["last_vault"] = now.isoformat()
+    outcome = random.choice(["win", "nothing", "lose"])
+    if outcome == "win":
+        user["gold"] += 350
+        msg = f"🏆 Megtaláltad a jackpotot! +350 GOLD {ctx.author.mention}"
+    elif outcome == "nothing":
+        msg = f"🔍 A vault üres volt… semmit sem kaptál. 😐"
+    else:
+        user["gold"] = max(0, user["gold"] - 150)
+        msg = f"💸 Csapda volt! Elvesztettél 150 GOLD-ot."
+
+    data[user_id] = user
+    save_data(data)
+    await ctx.send(msg)
+
 
 @bot.command()
 async def rob(ctx, member: discord.Member):
