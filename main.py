@@ -87,7 +87,7 @@ async def info(ctx):
         "📜 **GOLDBOT PARANCSOK** 📜\n\n"
         "**💰 Alap:**\n"
         "`!bal` – Megnézed mennyi GOLD-od van\n"
-        "`!claim` – 30 percenként 10 GOLD\n"
+        "`!claim` – 30 percenként 10-100 GOLD\n"
         "`!daily` – Napi jutalom: 100 GOLD\n"
         "`!rank` – Jelenlegi rangod\n\n"
         "**🎲 Mini-játékok:**\n"
